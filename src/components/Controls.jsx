@@ -1,35 +1,46 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Controls({ onDraw, onReset, disabled }) {
   const [showResetModal, setShowResetModal] = useState(false);
   const [showDrawModal, setShowDrawModal] = useState(false);
   const [progress, setProgress] = useState(0);
+  const hasDrawnRef = useRef(false);
 
   useEffect(() => {
-    if (showDrawModal) {
-      setProgress(0);
-      const duration = 1000; // 1 segundo
-      const interval = 20; // atualiza a cada 20ms
-      const steps = duration / interval;
-      const increment = 100 / steps;
+    if (!showDrawModal) {
+      hasDrawnRef.current = false;
+      return;
+    }
 
-      const timer = setInterval(() => {
-        setProgress((prev) => {
-          const next = prev + increment;
-          if (next >= 100) {
-            clearInterval(timer);
+    setProgress(0);
+    const duration = 500;
+    const interval = 20;
+    const steps = duration / interval;
+    const increment = 100 / steps;
+
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        const next = prev + increment;
+
+        if (next >= 100) {
+          clearInterval(timer);
+
+          if (!hasDrawnRef.current) {
+            hasDrawnRef.current = true;
             setTimeout(() => {
               setShowDrawModal(false);
               onDraw();
             }, 200);
-            return 100;
           }
-          return next;
-        });
-      }, interval);
 
-      return () => clearInterval(timer);
-    }
+          return 100;
+        }
+
+        return next;
+      });
+    }, interval);
+
+    return () => clearInterval(timer);
   }, [showDrawModal, onDraw]);
 
   function handleDrawClick() {
