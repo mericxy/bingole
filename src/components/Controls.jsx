@@ -81,7 +81,7 @@ export default function Controls({ onDraw, onReset, disabled }) {
 
       {/* Modal de Sorteio */}
       {showDrawModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-zinc-800 rounded-lg p-8 max-w-sm mx-4 shadow-xl">
             <h3 className="text-xl font-bold mb-6 text-center">Sorteando...</h3>
             <div className="w-full bg-zinc-700 rounded-full h-4 overflow-hidden">
@@ -96,7 +96,7 @@ export default function Controls({ onDraw, onReset, disabled }) {
 
       {/* Modal de Reset */}
       {showResetModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-zinc-800 rounded-lg p-6 max-w-sm mx-4 shadow-xl">
             <h3 className="text-xl font-bold mb-4">Confirmar Reset</h3>
             <p className="text-zinc-300 mb-6">
