@@ -3,16 +3,26 @@ import { useState, useEffect, useRef } from "react";
 export default function Controls({ onDraw, onReset, disabled }) {
   const [showResetModal, setShowResetModal] = useState(false);
   const [showDrawModal, setShowDrawModal] = useState(false);
+  const [animate, setAnimate] = useState(false);
   const [progress, setProgress] = useState(0);
   const hasDrawnRef = useRef(false);
 
   useEffect(() => {
     if (!showDrawModal) {
       hasDrawnRef.current = false;
+      setAnimate(false);
       return;
     }
 
     setProgress(0);
+    setAnimate(false);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setAnimate(true);
+      });
+    });
+
     const duration = 500;
     const interval = 20;
     const steps = duration / interval;
@@ -21,10 +31,8 @@ export default function Controls({ onDraw, onReset, disabled }) {
     const timer = setInterval(() => {
       setProgress((prev) => {
         const next = prev + increment;
-
         if (next >= 100) {
           clearInterval(timer);
-
           if (!hasDrawnRef.current) {
             hasDrawnRef.current = true;
             setTimeout(() => {
@@ -32,16 +40,15 @@ export default function Controls({ onDraw, onReset, disabled }) {
               onDraw();
             }, 200);
           }
-
           return 100;
         }
-
         return next;
       });
     }, interval);
 
     return () => clearInterval(timer);
   }, [showDrawModal, onDraw]);
+
 
   function handleDrawClick() {
     setShowDrawModal(true);
@@ -86,7 +93,10 @@ export default function Controls({ onDraw, onReset, disabled }) {
             <h3 className="text-xl font-bold mb-6 text-center">Sorteando...</h3>
             <div className="w-full bg-zinc-700 rounded-full h-4 overflow-hidden">
               <div
-                className="bg-emerald-500 h-full rounded-full transition-all duration-75 ease-linear"
+                className={`
+                  bg-emerald-500 h-full rounded-full
+                  ${animate ? "transition-all duration-75 ease-linear" : ""}
+                `}
                 style={{ width: `${progress}%` }}
               />
             </div>
