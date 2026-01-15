@@ -2,6 +2,7 @@ import Layout from "./components/Layout";
 import BingoBall from "./components/BingoBall";
 import Controls from "./components/Controls";
 import History from "./components/History";
+import FloatingFooter from "./components/FloatingFooter";
 import { useBingo } from "./hooks/useBingo";
 
 export default function App() {
@@ -20,6 +21,8 @@ export default function App() {
       />
 
       <History items={bingo.history} />
+
+      <FloatingFooter />
     </Layout>
   );
 }
