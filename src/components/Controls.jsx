@@ -14,41 +14,33 @@ export default function Controls({ onDraw, onReset, disabled }) {
       return;
     }
 
+    let start = null;
+    const duration = 1200;
+
+    setAnimate(true);
     setProgress(0);
-    setAnimate(false);
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setAnimate(true);
-      });
-    });
+    function animateProgress(timestamp) {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      const t = Math.min(elapsed / duration, 1);
+      const eased = easeOutCubic(t);
 
-    const duration = 500;
-    const interval = 20;
-    const steps = duration / interval;
-    const increment = 100 / steps;
+      setProgress(eased * 100);
 
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + increment;
-        if (next >= 100) {
-          clearInterval(timer);
-          if (!hasDrawnRef.current) {
-            hasDrawnRef.current = true;
-            setTimeout(() => {
-              setShowDrawModal(false);
-              onDraw();
-            }, 200);
-          }
-          return 100;
-        }
-        return next;
-      });
-    }, interval);
+      if (t < 1) {
+        requestAnimationFrame(animateProgress);
+      } else if (!hasDrawnRef.current) {
+        hasDrawnRef.current = true;
+        setTimeout(() => {
+          setShowDrawModal(false);
+          onDraw();
+        }, 300);
+      }
+    }
 
-    return () => clearInterval(timer);
+    requestAnimationFrame(animateProgress);
   }, [showDrawModal, onDraw]);
-
 
   function handleDrawClick() {
     setShowDrawModal(true);
@@ -65,6 +57,10 @@ export default function Controls({ onDraw, onReset, disabled }) {
 
   function handleCancelReset() {
     setShowResetModal(false);
+  }
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
   }
 
   return (
@@ -93,10 +89,7 @@ export default function Controls({ onDraw, onReset, disabled }) {
             <h3 className="text-xl font-bold mb-6 text-center">Sorteando...</h3>
             <div className="w-full bg-zinc-700 rounded-full h-4 overflow-hidden">
               <div
-                className={`
-                  bg-emerald-500 h-full rounded-full
-                  ${animate ? "transition-all duration-75 ease-linear" : ""}
-                `}
+                className="bg-emerald-500 h-full rounded-full shadow-[0_0_12px_#10b981]"
                 style={{ width: `${progress}%` }}
               />
             </div>
