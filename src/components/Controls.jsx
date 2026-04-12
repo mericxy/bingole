@@ -1,24 +1,29 @@
 import { useState, useEffect, useRef } from "react";
 
-export default function Controls({ onDraw, onReset, disabled }) {
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+export default function Controls({
+  onDraw,
+  onReset,
+  disabled,
+  onToggleTheaterMode,
+  theaterMode,
+}) {
   const [showResetModal, setShowResetModal] = useState(false);
   const [showDrawModal, setShowDrawModal] = useState(false);
-  const [animate, setAnimate] = useState(false);
   const [progress, setProgress] = useState(0);
   const hasDrawnRef = useRef(false);
 
   useEffect(() => {
     if (!showDrawModal) {
       hasDrawnRef.current = false;
-      setAnimate(false);
       return;
     }
 
     let start = null;
     const duration = 1200;
-
-    setAnimate(true);
-    setProgress(0);
 
     function animateProgress(timestamp) {
       if (!start) start = timestamp;
@@ -43,6 +48,7 @@ export default function Controls({ onDraw, onReset, disabled }) {
   }, [showDrawModal, onDraw]);
 
   function handleDrawClick() {
+    setProgress(0);
     setShowDrawModal(true);
   }
 
@@ -59,24 +65,37 @@ export default function Controls({ onDraw, onReset, disabled }) {
     setShowResetModal(false);
   }
 
-  function easeOutCubic(t) {
-    return 1 - Math.pow(1 - t, 3);
-  }
-
   return (
     <>
-      <div className="flex gap-4 justify-center">
+      <div
+        className={`flex justify-center ${
+          theaterMode ? "flex-col gap-3 md:flex-row" : "gap-4"
+        }`}
+      >
         <button
           onClick={handleDrawClick}
           disabled={disabled}
-          className="px-6 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40"
+          className={`rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 ${
+            theaterMode ? "px-8 py-4 text-xl font-semibold" : "px-6 py-2"
+          }`}
         >
           Sortear
         </button>
 
         <button
+          onClick={onToggleTheaterMode}
+          className={`rounded-lg bg-sky-700 hover:bg-sky-600 ${
+            theaterMode ? "px-8 py-4 text-xl font-semibold" : "px-6 py-2"
+          }`}
+        >
+          {theaterMode ? "Sair do Telão" : "Modo Telão"}
+        </button>
+
+        <button
           onClick={handleResetClick}
-          className="px-6 py-2 rounded-lg bg-zinc-700 hover:bg-zinc-600"
+          className={`rounded-lg bg-zinc-700 hover:bg-zinc-600 ${
+            theaterMode ? "px-8 py-4 text-xl font-semibold" : "px-6 py-2"
+          }`}
         >
           Resetar
         </button>
