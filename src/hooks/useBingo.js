@@ -1,17 +1,26 @@
 import { useState, useEffect } from "react";
-import { createBingoSet, drawBall, getBingoLetter } from "../utils/bingo";
+import {
+  countRemainingByLetter,
+  createBingoSet,
+  drawBall,
+  getBingoLetter,
+  getGameMode,
+} from "../utils/bingo";
 
-const STORAGE_KEY = "bingo_game_state";
+function getStorageKey(modeId) {
+  return `bingo_game_state_${modeId}`;
+}
 
-export function useBingo(totalBalls = 75) {
-  // Carrega estado salvo do localStorage
-  const loadState = () => {
+export function useBingo(modeId = "75") {
+  const mode = getGameMode(modeId);
+
+  function loadState() {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(getStorageKey(mode.id));
       if (saved) {
         const state = JSON.parse(saved);
         return {
-          available: state.available || createBingoSet(totalBalls),
+          available: state.available || createBingoSet(mode.totalBalls),
           history: state.history || [],
           current: state.current || null,
         };
@@ -20,11 +29,11 @@ export function useBingo(totalBalls = 75) {
       console.error("Erro ao carregar dados do bingo:", error);
     }
     return {
-      available: createBingoSet(totalBalls),
+      available: createBingoSet(mode.totalBalls),
       history: [],
       current: null,
     };
-  };
+  }
 
   const initialState = loadState();
 
@@ -32,7 +41,6 @@ export function useBingo(totalBalls = 75) {
   const [history, setHistory] = useState(initialState.history);
   const [current, setCurrent] = useState(initialState.current);
 
-  // Salva o estado no localStorage sempre que houver mudanças
   useEffect(() => {
     try {
       const state = {
@@ -40,11 +48,11 @@ export function useBingo(totalBalls = 75) {
         history,
         current,
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(getStorageKey(mode.id), JSON.stringify(state));
     } catch (error) {
       console.error("Erro ao salvar dados do bingo:", error);
     }
-  }, [available, history, current]);
+  }, [available, history, current, mode.id]);
 
   function draw() {
     if (available.length === 0) return;
@@ -53,7 +61,7 @@ export function useBingo(totalBalls = 75) {
 
     const ballData = {
       value: ball,
-      letter: getBingoLetter(ball),
+      letter: getBingoLetter(ball, mode.totalBalls),
     };
 
     setAvailable(remaining);
@@ -62,15 +70,18 @@ export function useBingo(totalBalls = 75) {
   }
 
   function reset() {
-    setAvailable(createBingoSet(totalBalls));
+    setAvailable(createBingoSet(mode.totalBalls));
     setHistory([]);
     setCurrent(null);
   }
 
   return {
+    mode,
     current,
     history,
     remaining: available.length,
+    remainingByLetter: countRemainingByLetter(available, mode.totalBalls),
+    drawnCount: history.length,
     draw,
     reset,
   };
