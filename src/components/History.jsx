@@ -53,20 +53,23 @@ export default function History({ items, theaterMode = false }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Histórico</h2>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold">Historico</h2>
+        <span className="text-xs text-zinc-400">{items.length} sorteados</span>
+      </div>
 
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-5 gap-2 md:gap-4">
         {LETTERS.map((letter) => (
-          <div key={letter}>
-            <h3 className="text-center font-bold mb-2">{letter}</h3>
+          <div key={letter} className="rounded-2xl bg-zinc-950/60 p-2 md:bg-transparent md:p-0">
+            <h3 className="text-center font-bold mb-2 text-sm md:text-base">{letter}</h3>
 
-            <div className="flex flex-wrap gap-2 justify-center">
+            <div className="flex flex-wrap gap-1.5 justify-center md:gap-2">
               {grouped[letter].map((item) => {
                 const recent = isRecent(item.letter, item.value);
                 return (
                   <div
                     key={item.value}
-                    className={`w-9 h-9 rounded-full flex items-center justify-center text-sm transition-all ${
+                    className={`h-8 w-8 rounded-full flex items-center justify-center text-xs transition-all md:h-9 md:w-9 md:text-sm ${
                       recent
                         ? "bg-emerald-600 ring-2 ring-emerald-400 scale-110 font-bold"
                         : "bg-zinc-800"

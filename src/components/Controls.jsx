@@ -8,7 +8,6 @@ export default function Controls({
   onDraw,
   onReset,
   disabled,
-  onToggleTheaterMode,
   theaterMode,
 }) {
   const [showResetModal, setShowResetModal] = useState(false);
@@ -69,32 +68,23 @@ export default function Controls({
     <>
       <div
         className={`flex justify-center ${
-          theaterMode ? "flex-col gap-3 md:flex-row" : "gap-4"
+          theaterMode ? "flex-col gap-3 md:flex-row" : "gap-3"
         }`}
       >
         <button
           onClick={handleDrawClick}
           disabled={disabled}
           className={`rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 ${
-            theaterMode ? "px-8 py-4 text-xl font-semibold" : "px-6 py-2"
+            theaterMode ? "px-8 py-4 text-xl font-semibold" : "px-8 py-3 text-base font-semibold"
           }`}
         >
           Sortear
         </button>
 
         <button
-          onClick={onToggleTheaterMode}
-          className={`rounded-lg bg-sky-700 hover:bg-sky-600 ${
-            theaterMode ? "px-8 py-4 text-xl font-semibold" : "px-6 py-2"
-          }`}
-        >
-          {theaterMode ? "Sair do Telão" : "Modo Telão"}
-        </button>
-
-        <button
           onClick={handleResetClick}
           className={`rounded-lg bg-zinc-700 hover:bg-zinc-600 ${
-            theaterMode ? "px-8 py-4 text-xl font-semibold" : "px-6 py-2"
+            theaterMode ? "px-8 py-4 text-xl font-semibold" : "px-8 py-3 text-base font-semibold"
           }`}
         >
           Resetar

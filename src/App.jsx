@@ -1,35 +1,54 @@
 import { useEffect, useRef, useState } from "react";
 import Layout from "./components/Layout";
+import AppMenu from "./components/AppMenu";
 import BingoBall from "./components/BingoBall";
 import Controls from "./components/Controls";
 import History from "./components/History";
 import FloatingFooter from "./components/FloatingFooter";
-import ModeSelector from "./components/ModeSelector";
-import RemainingPanel from "./components/RemainingPanel";
 import { useBingo } from "./hooks/useBingo";
 import { GAME_MODES } from "./utils/bingo";
 
 const GAME_MODE_STORAGE_KEY = "bingo_selected_mode";
 
-function BingoGame({ modeId, theaterMode, onToggleTheaterMode }) {
+function BingoGame({
+  modeId,
+  theaterMode,
+  onToggleTheaterMode,
+  selectedModeId,
+  onSelectMode,
+}) {
   const bingo = useBingo(modeId);
 
   return (
     <>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Bingole</h1>
+          {!theaterMode && (
+            <p className="mt-1 text-sm text-zinc-400">
+              Sorteie com foco no jogo. Configuracoes ficam no menu.
+            </p>
+          )}
+        </div>
+
+        <AppMenu
+          modes={GAME_MODES}
+          selectedModeId={selectedModeId}
+          onSelectMode={onSelectMode}
+          theaterMode={theaterMode}
+          onToggleTheaterMode={onToggleTheaterMode}
+          remaining={bingo.remaining}
+          totalBalls={bingo.mode.totalBalls}
+          remainingByLetter={bingo.remainingByLetter}
+        />
+      </div>
+
       <BingoBall value={bingo.current} theaterMode={theaterMode} />
 
       <Controls
         onDraw={bingo.draw}
         onReset={bingo.reset}
         disabled={bingo.remaining === 0}
-        onToggleTheaterMode={onToggleTheaterMode}
-        theaterMode={theaterMode}
-      />
-
-      <RemainingPanel
-        remaining={bingo.remaining}
-        totalBalls={bingo.mode.totalBalls}
-        remainingByLetter={bingo.remainingByLetter}
         theaterMode={theaterMode}
       />
 
@@ -83,22 +102,19 @@ export default function App() {
     }
   }
 
+  function handleSelectMode(modeId) {
+    setSelectedModeId(modeId);
+  }
+
   return (
     <Layout ref={appRef} theaterMode={isTheaterMode}>
-      <h1 className="text-2xl font-bold text-center">Bingole</h1>
-
-      <ModeSelector
-        modes={GAME_MODES}
-        value={selectedModeId}
-        onChange={setSelectedModeId}
-        theaterMode={isTheaterMode}
-      />
-
       <BingoGame
         key={selectedModeId}
         modeId={selectedModeId}
         theaterMode={isTheaterMode}
         onToggleTheaterMode={handleToggleTheaterMode}
+        selectedModeId={selectedModeId}
+        onSelectMode={handleSelectMode}
       />
 
       <FloatingFooter />
